@@ -1,0 +1,40 @@
+version: '3'
+
+services: 
+  reverseproxy:
+    build: .
+    image: reverseproxy
+    depends_on: 
+      - express-mongo
+      - hapi-postgres
+    ports: 
+      - 8080:8080
+    restart: always
+  express-mongo:
+    build: 
+      context: ../express-mongo
+    image: express-mongo
+    restart: always
+    depends_on: 
+      - mongo
+  mongo:
+    image: mongo
+    volumes: 
+      - "mongo:/data/db"
+  hapi-postgres:
+    build: 
+      context: ../hapi-postgres
+    image: hapi-postgres
+    restart: always
+    depends_on: 
+      - postgres
+  postgres:
+    image: postgres:12
+    environment: 
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+volumes: 
+  mongo:
+  postgres:
